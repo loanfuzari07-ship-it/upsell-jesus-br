@@ -203,7 +203,35 @@
 
   (function () {
     "use strict";
-    const params = new URLSearchParams(window.location.search);
+    function getTrackingParams() {
+      const tracking = new URLSearchParams();
+      ["localStorage", "sessionStorage"].forEach(function (name) {
+        try {
+          const storage = window[name];
+          const saved = JSON.parse(storage.getItem("jc_saved_params") || "{}");
+          Object.keys(saved).forEach(function (key) {
+            if (typeof saved[key] === "string" && saved[key]) tracking.set(key, saved[key]);
+          });
+          for (let i = 0; i < storage.length; i++) {
+            const key = storage.key(i);
+            if (key && /^(utm_|subid)|^(src|sck|xcod|fbclid|gclid|ttclid|msclkid|cid|click_id|_fbp|_fbc)$/.test(key) && !tracking.has(key)) {
+              const value = storage.getItem(key);
+              if (value) tracking.set(key, value);
+            }
+          }
+        } catch (_) {}
+      });
+      new URLSearchParams(window.location.search).forEach(function (value, key) {
+        if (value) tracking.set(key, value);
+      });
+      return tracking;
+    }
+    const params = getTrackingParams();
+    const savedParams = {};
+    params.forEach(function (value, key) { savedParams[key] = value; });
+    ["sessionStorage", "localStorage"].forEach(function (name) {
+      try { window[name].setItem("jc_saved_params", JSON.stringify(savedParams)); } catch (_) {}
+    });
     const firstName = (params.get("firstName") || "").trim();
     if (firstName) {
       document.getElementById("heroTitle").textContent =
@@ -227,11 +255,20 @@
         return;
       }
 
-      const keys = ["cid", "fbclid", "gclid", "src", "utm_source", "utm_medium",
-        "utm_campaign", "utm_content", "utm_term", "utm_id", "sck", "xcod", "click_id", "firstName"];
-      keys.forEach(function (key) {
-        if (params.has(key)) checkout.searchParams.set(key, params.get(key));
+      // Keep tracking added to the link by UTMify, plus incoming or saved parameters.
+      try {
+        new URL(offer.href).searchParams.forEach(function (value, key) {
+          if (value) checkout.searchParams.set(key, value);
+        });
+      } catch (_) {}
+      getTrackingParams().forEach(function (value, key) {
+        checkout.searchParams.set(key, value);
       });
+      ["step", "live", "off", "phone", "telefone", "telephone", "celular", "cel", "whatsapp", "customer.phone", "tel", "phone_number", "email", "customer.email"].forEach(function (key) {
+        checkout.searchParams.delete(key);
+      });
+      // The back-offer always uses the R$ 27 checkout offer.
+      checkout.searchParams.set("offer", new URL(OFFER_CHECKOUT_URL).searchParams.get("offer"));
 
       // O checkout é responsável pelos eventos de conversão, evitando duplicidade.
       window.location.assign(checkout.toString());
