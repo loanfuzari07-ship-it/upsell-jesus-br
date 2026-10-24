@@ -124,14 +124,14 @@
 
         <h2 class="offer-heading"><strong>💛 Semeie sua semente</strong>Faça sua Oferta de Milagres!</h2>
 
-        <a class="offer" data-offer data-price="27" href="https://checkout.wiven.com.br/checkout/cmvigtqq50lc201of2my7ivug?offer=O4I2UFR" id="donationOffer" aria-describedby="checkoutMessage">
+        <a class="offer" data-offer data-price="17" href="https://checkout.wiven.com.br/checkout/cmvigtqq50lc201of2my7ivug?offer=O4I2UFR" id="donationOffer" aria-describedby="checkoutMessage">
           <span class="offer-badge">⭐ SEGUNDA CHANCE</span>
           <div class="offer-row">
             <div class="offer-left">
               <div class="offer-label">FAZER MINHA OFERTA</div>
               
-              <div class="offer-was">R$ 67,00</div>
-              <div class="offer-price">R$ 27,00</div>
+              <div class="offer-was">R$ 37,00</div>
+              <div class="offer-price">R$ 17,00</div>
             </div>
             <div class="offer-cta">SEMEAR →</div>
           </div>
@@ -198,7 +198,7 @@
   </main>
 
   <script>
-  // Checkout Wiven para a oferta de R$ 27,00.
+  // Checkout Wiven para a oferta de R$ 17,00.
   const OFFER_CHECKOUT_URL = "https://checkout.wiven.com.br/checkout/cmvigtqq50lc201of2my7ivug?offer=O4I2UFR";
 
   (function () {
@@ -267,7 +267,7 @@
       ["step", "live", "off", "phone", "telefone", "telephone", "celular", "cel", "whatsapp", "customer.phone", "tel", "phone_number", "email", "customer.email"].forEach(function (key) {
         checkout.searchParams.delete(key);
       });
-      // The back-offer always uses the R$ 27 checkout offer.
+      // The back-offer always uses the configured checkout offer.
       checkout.searchParams.set("offer", new URL(OFFER_CHECKOUT_URL).searchParams.get("offer"));
 
       // O checkout é responsável pelos eventos de conversão, evitando duplicidade.
